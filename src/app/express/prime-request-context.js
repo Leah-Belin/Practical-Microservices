@@ -1,11 +1,11 @@
 const uuid = require('uuid/v4')
 
-function primeRequestContext (req, res, next){
-    req.context = {
-        traceId: uuid()
-    }
+function primeRequestContext (req, res, next) {
+  req.context = {
+    traceId: uuid()
+  }
 
-    next()
+  next()
 }
 
 module.exports = primeRequestContext

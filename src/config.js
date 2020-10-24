@@ -1,7 +1,8 @@
-function createConfig ({env}) {
-    return {
-        env,
-    }
+function createConfig ({ env }) {
+
+  return {
+    env
+  }
 }
 
 module.exports = createConfig
