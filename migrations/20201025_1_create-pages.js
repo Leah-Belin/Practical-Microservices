@@ -4,4 +4,4 @@ knex.schema.createTabe('pages', table => {
     table.jsonb('page_data').defaultsTo('{}')
 })
 
-esports.down = knex => knex.schema.dropTable('pages')
+exports.down = knex => knex.schema.dropTable('pages')
