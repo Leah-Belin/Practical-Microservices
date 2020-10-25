@@ -18,3 +18,6 @@ This code will follow the examples in Ethan Garofolo's book Practical Microservi
 ## Notes for chapter 3 ##
 - You'll need to pay special attention to updating src/config.js.  The prior db implementation needs to have knexClient and postgresClient separated
 - The postgresClient needs to be instantiated in the createDatabase method in postgres-client.js
+
+## Notes for chapter 4 ##
+- You may be tempted to try to run the server, but it will not run if you have followed the instructions in the book to the letter because there is some subscription code that is not defined yet.  Removing the premature subscriptions code will allow you to run the server.
