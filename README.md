@@ -3,7 +3,7 @@
 This code will follow the examples in Ethan Garofolo's book Practical Microservices: Build Event-Driven Architectures with Event Sourcing and CQRS
 
 ## Notes for chapter 1 ##
-- You must install node, docker, express, and uuidv4 to get the code to run
+- You must install node, docker, express, camelcase-keys, and uuidv4 to get the code to run
 - To run code npm run-start-dev-server
 - go to http://localhost:3000 to see the interface
 - I found it helpful to play with express first, building the documentation's hello world program.
