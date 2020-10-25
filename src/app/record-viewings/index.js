@@ -1,9 +1,22 @@
 const express = require('express')
 
 function createActions ({ messageStore }) {
-  function recordViewing (traceId, videoId) {
-    // Return something Promise-based so that the endpoint doesn't crash
-    return Promise.resolve(true)
+  function recordViewing (traceId, videoId, userId) {
+    const viewedEvent = { 
+        id: uuid(),
+        type: 'VideoViewed',
+        metadata: {
+            traceId,
+            userId
+        },
+        data: {
+            userId, 
+            videoId
+        }
+    }
+    const streamName = `viewing-${videoId}`
+
+    return messageStore.write(streamName, viewedEvent)
   }
 
   return {
