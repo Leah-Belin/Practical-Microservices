@@ -8,7 +8,7 @@ function createHandlers ({ queries }){
             .then(viewData => res.render('home/templates/home', viewData)
             ).catch(next)
     }  
-    
+     
     return {
          home
     }
