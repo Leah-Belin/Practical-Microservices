@@ -14,4 +14,4 @@ services:
     ports:
       - '5433:5433'
     env_file:
-      - dev.env
+      - dev.env 
