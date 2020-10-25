@@ -2,8 +2,15 @@ const camelCaseKeys = require('camel-case-keys')
 const express = require('express')
 
 function createHandlers ({ queries }){
-    return {   
-
+    function home (req, res, next) {
+        return queries
+            .loadHomePage()
+            .then(viewData => res.render('home/templats/home', viewData)
+            ).catch(next)
+    }  
+    
+    return {
+         home
     }
 }
 
