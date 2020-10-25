@@ -52,11 +52,6 @@ function createQueries ({ db}) {
 function build ({ db, messageStore }) {
     const queries = createQueries({ db })
     const handlers = createHandlers({ queries })
-    const subscription = messageStore.createSubscription({
-        streamName: 'viewing',
-        handlers,
-        subscriberId: 'aggregators:homepage'
-    })
 
     function init () {
 
