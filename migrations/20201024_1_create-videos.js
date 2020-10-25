@@ -8,4 +8,4 @@ table => {
     table.integer('view_count').defaultsTo(0)
 })
 
-exports.down = knex => knex.schema.dropTable('videos')
+exports.down = knex => knex.schema.dropTable('videos') 
