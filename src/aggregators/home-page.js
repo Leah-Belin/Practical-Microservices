@@ -38,7 +38,7 @@ function createHandlers ({ queries }) {
         WHERE
           page_name = 'home' AND
           (page_data->>'lastViewProcessed')::int < :globalPosition
-      `
+      ` //remove the check above for the idempotence activity suggestion in the book
   
       return db.then(client => client.raw(queryString, { globalPosition }))
     }
