@@ -10,8 +10,12 @@ function createActions ({
 
 function createHandlers ({ actions })
 {
-    return {
+    function handleRecordViewing (req, res){
+        return actions.recordViewing(req.context.traceId, req.params.videoId).then(() => res.redirect('/'))
+    }
 
+    return {
+        handleRecordViewing
     }
 }
 
