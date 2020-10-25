@@ -5,6 +5,22 @@ function createHandlers ({ queries }) {
 }
 
 function createQueries ({ db}) {
+    function ensureHomePage() {
+        const intialData = {
+            pageData: { latViewProcessed: 0, videosWatched: 0}
+        }
+
+        const queryString = `
+        INSERT INTO
+          pages(page_name, page_data)
+        VALUES
+          ('home', :pageData)
+        ON CONFLICT DO NOTHING
+      `
+
+      return db.then(client => client.raw(queryString, intialData))
+    }
+
     function incrementVideosWatched (globalPosition) {
         const queryString = `
         UPDATE
@@ -28,6 +44,7 @@ function createQueries ({ db}) {
     }
 
     return {
+        ensureHomePage,
         incrementVideosWatched
     }
 }
@@ -35,10 +52,26 @@ function createQueries ({ db}) {
 function build ({ db, messageStore }) {
     const queries = createQueries({ db })
     const handlers = createHandlers({ queries })
+    const subscription = messageStore.createSubscription({
+        streamName: 'viewing',
+        handlers,
+        subscriberId: 'aggregators:homepage'
+    })
+
+    function init () {
+
+        return queries.ensureHomePage()
+    }
+
+    function start () {
+        init().then(subscription.start)
+    }
 
     return {
         queries, 
-        handlers
+        handlers,
+        init,
+        start
     }
 }
 
