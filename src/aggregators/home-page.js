@@ -58,7 +58,7 @@ function createHandlers ({ queries }) {
     }
   
     function start () { 
-      init().then(subscription.start)
+      init()
     }
   
     return {
