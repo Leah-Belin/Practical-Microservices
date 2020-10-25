@@ -11,3 +11,4 @@ This code will follow the examples in Ethan Garofolo's book Practical Microservi
 
 ## Notes for chapter 2 ##
 - All source code for chapter 2 is in the video-tutorials folder
+- Don't forget to stop the docker container from Chapter 1.  re-run _docker-compose rm -sf && docker compose up_ from the video-tutorials folder
