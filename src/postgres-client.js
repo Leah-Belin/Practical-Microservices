@@ -1,7 +1,8 @@
 const Bluebird = require('bluebird')
 const pg = require('pg')
 
-function createDatabase ({ connectionString, Promise: Bluebird }){
+function createDatabase ({ connectionString }){
+    const client = new pg.Client({ connectionString, Promise: Bluebird })
 
     let connectedClient = null
 
