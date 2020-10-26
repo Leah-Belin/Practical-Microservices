@@ -1,5 +1,5 @@
 const Bluebird = require('bluebird')
-const uuid = require('uuidv4')
+const uuid = require('uuid/v4')
 const category = require('./category')
 
 function configureCreateSubscription({ read, readLastMessage, write }){
@@ -56,5 +56,39 @@ function writePosition (position) {
 
     return write(subscriberStreamName, positionEvent)
 }
+
+function getNextBatchOfMessages () {
+    return read(streamName, currentPosition + 1, messagesPerTick)
+}
+
+function processBatch (messages) {
+    return Bluebird.each(messages, message =>
+      handleMessage(message)
+        .then(() => updateReadPosition(message.globalPosition))
+        .catch(err => {
+          logError(message, err)
+
+          // Re-throw so that we can break the chain
+          throw err
+        })
+    )
+      .then(() => messages.length)
+  }
+
+  function logError (lastMessage, error) {
+    // eslint-disable-next-line no-console
+    console.error(
+      'error processing:\n',
+      `\t${subscriberId}\n`,
+      `\t${lastMessage.id}\n`,
+      `\t${error}\n`
+    )
+  }
+
+  function handleMessage (message) {
+      const handler = handlers[message.type] || handlers.$any
+
+      return handler ? handler(message) : Promise.resolve(true)
+  }
 
 module.exports = configureCreateSubscription
