@@ -1,132 +1,149 @@
 const Bluebird = require('bluebird')
 const uuid = require('uuid/v4')
+
 const category = require('./category')
 
-function configureCreateSubscription({ read, readLastMessage, write }){
-    return ({
-        streamName, 
-        handlers,
-        messagesPerTick = 100,
-        subscriberId,
-        positionUpdateInterval = 100,
-        tickIntervalMs = 100
-    }) => {
-        const subscriberStreamName = `subscruberPosition-${subscriberId}`
+function configureCreateSubscription ({ read, readLastMessage, write }) {
 
-        let currentPosition = 0
-        let messagesSinceLastPsitionWrite = 0
-        let keepGoing = true
+  return ({
+    streamName,
+    handlers,
+    messagesPerTick = 100,
+    subscriberId,
+    positionUpdateInterval = 100,
+    originStreamName = null,
+    tickIntervalMs = 100
+  }) => {
+    const subscriberStreamName = `subscriberPosition-${subscriberId}`
 
-        return{
-            loadPosition,
-            start,
-            stop,
-            tick,
-            writePosition
-        }
-    }
-}
+    let currentPosition = 0
+    let messagesSinceLastPositionWrite = 0
+    let keepGoing = true
 
-function loadPosition () {
-    
-    return readLastMessage(subscriberStreamName)
-        .then(message => {
-            currentPosition = message ? message.data.position : 0
-        })
-}
-
-function updateReadPosition (position) {
-    currentPosition = positionmessagesSinceLastPositionWite += 1
-
-    if (messagesSinceLastPositionWrite === positionUpdateInterval) {
-        messagesSinceLastPositionWrite = 0
-
-        return writePosition(position)
-    }
-
-    return Bluebird.resolve(true)
-}
-
-function writePosition (position) {
-    const positionEvent = {
+    function writePosition (position) {
+      const positionEvent = {
         id: uuid(),
-        type: 'Read', 
+        type: 'Read',
         data: { position }
+      }
+
+      return write(subscriberStreamName, positionEvent)
     }
 
-    return write(subscriberStreamName, positionEvent)
-}
+    function updateReadPosition (position) {
+      currentPosition = position
+      messagesSinceLastPositionWrite += 1
 
-function getNextBatchOfMessages () {
-    return read(streamName, currentPosition + 1, messagesPerTick)
-}
+      if (messagesSinceLastPositionWrite === positionUpdateInterval) {
+        messagesSinceLastPositionWrite = 0
+        
+        return writePosition(position)
+      }
 
-function processBatch (messages) {
-    return Bluebird.each(messages, message =>
-      handleMessage(message)
-        .then(() => updateReadPosition(message.globalPosition))
-        .catch(err => {
-          logError(message, err)
+      return Bluebird.resolve(true)
+    }
 
-          // Re-throw so that we can break the chain
-          throw err
+    function loadPosition () {
+      return readLastMessage(subscriberStreamName)
+        .then(message => {
+          currentPosition = message ? message.data.position : 0
         })
-    )
-      .then(() => messages.length)
-  }
+    }
 
-  function logError (lastMessage, error) {
-    // eslint-disable-next-line no-console
-    console.error(
-      'error processing:\n',
-      `\t${subscriberId}\n`,
-      `\t${lastMessage.id}\n`,
-      `\t${error}\n`
-    )
-  }
+    function filterOnOriginMatch (messages) { 
+      if (!originStreamName) { 
+        return messages
+      }
 
-  function handleMessage (message) {
+      return messages.filter(message => {
+        const originCategory = 
+          message.metadata && category(message.metadata.originStreamName)
+
+        return originStreamName === originCategory 
+      })
+    }
+
+    function getNextBatchOfMessages () {
+      return read(streamName, currentPosition + 1, messagesPerTick)
+        .then(filterOnOriginMatch)
+    }
+
+    function handleMessage (message) {
       const handler = handlers[message.type] || handlers.$any
 
       return handler ? handler(message) : Promise.resolve(true)
-  }
+    }
 
-  function start () {
-    // eslint-disable-next-line
-    console.log(`Started ${subscriberId}`)
+    function processBatch (messages) {
+      return Bluebird.each(messages, message =>
+        handleMessage(message)
+          .then(() => updateReadPosition(message.globalPosition))
+          .catch(err => {
+            logError(message, err)
 
-    return poll()
-  }
+            // Re-throw so that we can break the chain
+            throw err
+          })
+      )
+        .then(() => messages.length)
+    }
 
-  function stop () {
-    // eslint-disable-next-line
-    console.log(`Stopped ${subscriberId}`)
+    function logError (lastMessage, error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'error processing:\n',
+        `\t${subscriberId}\n`,
+        `\t${lastMessage.id}\n`,
+        `\t${error}\n`
+      )
+    }
+    
+    function tick () {
+      return getNextBatchOfMessages()
+        .then(processBatch)
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error('Error processing batch', err)
 
-    keepGoing = false
-  }
+          stop()
+        })
+    }
 
-  async function poll () {
+    async function poll () {
       await loadPosition()
 
-       // eslint-disable-next-line no-unmodified-loop-condition
+      // eslint-disable-next-line no-unmodified-loop-condition
       while (keepGoing) {
-          const messagesProcessed = await tick()
-          
-          if (messagesProcessed === 0) {
-              await Bluebird.delay(tickerIntervalMs)
-          }
+        const messagesProcessed = await tick()
+
+        if (messagesProcessed === 0) {
+          await Bluebird.delay(tickIntervalMs)
+        }
       }
     }
 
-    function tick () {
-        return getNextBatchOfMessages()
-        .then(processBatch)
-        .catch(err => {
-            // eslint-disable-next-line no-console
-            console.error('Error processing batch', err)
+    function start () {
+      // eslint-disable-next-line
+      console.log(`Started ${subscriberId}`)
 
-            stop()
-        })
-    }    
+      return poll()
+    }
+
+    function stop () {
+      // eslint-disable-next-line
+      console.log(`Stopped ${subscriberId}`)
+
+      keepGoing = false
+    }
+
+    return {
+      loadPosition,
+      start,
+      stop,
+      tick,
+      writePosition
+    }
+  }
+}
 
 module.exports = configureCreateSubscription
