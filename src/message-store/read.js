@@ -32,10 +32,4 @@ function createRead ({ db }){
     }
 }
 
-function createRead({ db }) {
-    return {
-
-    }
-}
-
 module.exports = exports = createRead
