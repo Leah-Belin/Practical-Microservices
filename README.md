@@ -24,3 +24,4 @@ This code will follow the examples in Ethan Garofolo's book Practical Microservi
 
 ## Notes for chapter 5 ##
 - Make sure you replace the subscriptions code you removed to get chapter 4 code working.
+- The category file is not shown or mentioned in the book, you'll need to copy it from the source code into the message-store directory
