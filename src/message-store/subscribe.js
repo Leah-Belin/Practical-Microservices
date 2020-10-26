@@ -91,4 +91,42 @@ function processBatch (messages) {
       return handler ? handler(message) : Promise.resolve(true)
   }
 
+  function start () {
+    // eslint-disable-next-line
+    console.log(`Started ${subscriberId}`)
+
+    return poll()
+  }
+
+  function stop () {
+    // eslint-disable-next-line
+    console.log(`Stopped ${subscriberId}`)
+
+    keepGoing = false
+  }
+
+  async function poll () {
+      await loadPosition()
+
+       // eslint-disable-next-line no-unmodified-loop-condition
+      while (keepGoing) {
+          const messagesProcessed = await tick()
+          
+          if (messagesProcessed === 0) {
+              await Bluebird.delay(tickerIntervalMs)
+          }
+      }
+    }
+
+    function tick () {
+        return getNextBatchOfMessages()
+        .then(processBatch)
+        .catch(err => {
+            // eslint-disable-next-line no-console
+            console.error('Error processing batch', err)
+
+            stop()
+        })
+    }    
+
 module.exports = configureCreateSubscription
