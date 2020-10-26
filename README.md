@@ -2,12 +2,21 @@
 
 This code will follow the examples in Ethan Garofolo's book Practical Microservices: Build Event-Driven Architectures with Event Sourcing and CQRS
 
+The notes below are from my experiences programming along with the book.  I've left in every commit showing the winding paths I took to get the code into working order.  Hopefully some of my notes will save you some frustrations along the way.
+
+The source code that shipped with the book can be found here: https://pragprog.com/titles/egmicro/practical-microservices/
+
+Branch main is where I worked through the book code.
+Branch demo is the code from the book's zip files - you can pull this code down and check out the completed project working.
+
 ## Notes for chapter 1 ##
-- You must install node, docker, express, camelcase-keys, and uuidv4 to get the code to run
-- To run code npm run start-dev-server
+- You must install node, docker, express, camelcase-keys, and uuid to get the code to run
+- uuid importing appears to have changed.  try this: const { v4: uuid } = require('uuid')
+- To run code type npm run start-dev-server
 - go to http://localhost:3000 to see the interface
 - I found it helpful to play with express first, building the documentation's hello world program.
-- There were quite a few missing steps along the way, for instance there are a few places where the code forgets module.exports or doesn't add things into the config and index files immediately when they are introduced (I noticed this when mount-routes was introduced).  So sometimes looking ahead a few pages or checking out the source code that accompanies the book really helps.  You can find it here: https://pragprog.com/titles/egmicro/practical-microservices/ really helps
+- If youve never used docker before, it may also be helpful to experiment with docker.  I found it much easier to install docker on a machine running windows professional.  I tried first on a home installation and ran into quite a few frustrations.
+- There were quite a few missing steps along the way, for instance there are a few places where the code forgets module.exports or doesn't add things into the config and index files immediately when they are introduced (I noticed this when mount-routes was introduced).  So sometimes looking ahead a few pages or checking out the source code that accompanies the book really helps.   
 - All source code examples for Chapter 1 are in the first-pass folder
 
 ## Notes for chapter 2 ##
