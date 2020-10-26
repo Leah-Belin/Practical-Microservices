@@ -21,3 +21,6 @@ This code will follow the examples in Ethan Garofolo's book Practical Microservi
 
 ## Notes for chapter 4 ##
 - You may be tempted to try to run the server, but it will not run if you have followed the instructions in the book to the letter because there is some subscription code that is not defined yet.  Removing the premature subscriptions code will allow you to run the server.
+
+## Notes for chapter 5 ##
+- Make sure you replace the subscriptions code you removed to get chapter 4 code working.
