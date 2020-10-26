@@ -27,4 +27,34 @@ function configureCreateSubscription({ read, readLastMessage, write }){
     }
 }
 
+function loadPosition () {
+    
+    return readLastMessage(subscriberStreamName)
+        .then(message => {
+            currentPosition = message ? message.data.position : 0
+        })
+}
+
+function updateReadPosition (position) {
+    currentPosition = positionmessagesSinceLastPositionWite += 1
+
+    if (messagesSinceLastPositionWrite === positionUpdateInterval) {
+        messagesSinceLastPositionWrite = 0
+
+        return writePosition(position)
+    }
+
+    return Bluebird.resolve(true)
+}
+
+function writePosition (position) {
+    const positionEvent = {
+        id: uuid(),
+        type: 'Read', 
+        data: { position }
+    }
+
+    return write(subscriberStreamName, positionEvent)
+}
+
 module.exports = configureCreateSubscription
