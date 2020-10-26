@@ -1,5 +1,5 @@
 const express = require('express')
-const uuid = require('uuid/v4')
+const uuid = require('uuidv4')
 
 function createActions ({ messageStore }) {
   function recordViewing (traceId, videoId, userId) {
