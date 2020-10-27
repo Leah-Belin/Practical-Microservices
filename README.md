@@ -7,9 +7,9 @@ The notes below are from my experiences programming along with the book.  I've l
 
 The source code that shipped with the book can be found here: https://pragprog.com/titles/egmicro/practical-microservices/
 
-The src folder is where I worked through the code in the book.
-The first-pass folder is chapter 1 code provided with the book.
-The video-tutorials folder is the remainder of the code provided with the book.  (It goes beyond chapter 5, so it won't match what's in src until we go through the rest of the book)
+- The src folder is where I worked through the code in the book.
+- The first-pass folder is chapter 1 code provided with the book.
+- The video-tutorials folder is the remainder of the code provided with the book.  (It goes beyond chapter 5, so it won't match what's in src until we go through the rest of the book)
 
 ## Notes for chapter 1 ##
 - You must install node, docker, express, camelcase-keys, and uuid to get the code to run
